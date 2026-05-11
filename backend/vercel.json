@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api/index.py"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "@turso-database-url",
+    "TURSO_AUTH_TOKEN": "@turso-auth-token",
+    "SESSION_SECRET": "@session-secret",
+    "ADMIN_USERNAME": "@admin-username",
+    "ADMIN_PASSWORD": "@admin-password",
+    "FRONTEND_URL": "@frontend-url",
+    "NODE_ENV": "production"
+  }
+}

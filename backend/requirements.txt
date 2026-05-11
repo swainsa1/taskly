@@ -1,0 +1,132 @@
+aiohappyeyeballs==2.6.1
+    # via aiohttp
+aiohttp==3.13.5
+    # via libsql-client
+aiosignal==1.4.0
+    # via aiohttp
+alabaster==1.0.0
+    # via sphinx
+annotated-doc==0.0.4
+    # via fastapi
+annotated-types==0.7.0
+    # via pydantic
+anyio==4.13.0
+    # via
+    #   starlette
+    #   watchfiles
+attrs==26.1.0
+    # via aiohttp
+babel==2.18.0
+    # via sphinx
+bcrypt==5.0.0
+    # via taskly-backend (pyproject.toml)
+certifi==2026.4.22
+    # via requests
+charset-normalizer==3.4.7
+    # via requests
+click==8.3.3
+    # via uvicorn
+docutils==0.22.4
+    # via sphinx
+fastapi==0.136.1
+    # via taskly-backend (pyproject.toml)
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+h11==0.16.0
+    # via uvicorn
+httptools==0.7.1
+    # via uvicorn
+idna==3.13
+    # via
+    #   anyio
+    #   requests
+    #   yarl
+imagesize==2.0.0
+    # via sphinx
+itsdangerous==2.2.0
+    # via taskly-backend (pyproject.toml)
+jinja2==3.1.6
+    # via sphinx
+libsql-client==0.3.1
+    # via taskly-backend (pyproject.toml)
+mangum==0.21.0
+    # via taskly-backend (pyproject.toml)
+markupsafe==3.0.3
+    # via jinja2
+multidict==6.7.1
+    # via
+    #   aiohttp
+    #   yarl
+packaging==26.2
+    # via sphinx
+propcache==0.5.2
+    # via
+    #   aiohttp
+    #   yarl
+pydantic==2.13.4
+    # via fastapi
+pydantic-core==2.46.4
+    # via pydantic
+pygments==2.20.0
+    # via sphinx
+python-dotenv==1.2.2
+    # via
+    #   taskly-backend (pyproject.toml)
+    #   uvicorn
+python-multipart==0.0.27
+    # via taskly-backend (pyproject.toml)
+pyyaml==6.0.3
+    # via uvicorn
+requests==2.33.1
+    # via sphinx
+roman-numerals==4.1.0
+    # via sphinx
+snowballstemmer==3.0.1
+    # via sphinx
+sphinx==9.0.4
+    # via sphinx-press-theme
+sphinx-press-theme==0.8.0
+    # via libsql-client
+sphinxcontrib-applehelp==2.0.0
+    # via sphinx
+sphinxcontrib-devhelp==2.0.0
+    # via sphinx
+sphinxcontrib-htmlhelp==2.1.0
+    # via sphinx
+sphinxcontrib-jsmath==1.0.1
+    # via sphinx
+sphinxcontrib-qthelp==2.0.0
+    # via sphinx
+sphinxcontrib-serializinghtml==2.0.0
+    # via sphinx
+starlette==1.0.0
+    # via fastapi
+typing-extensions==4.15.0
+    # via
+    #   aiosignal
+    #   anyio
+    #   fastapi
+    #   libsql-client
+    #   mangum
+    #   pydantic
+    #   pydantic-core
+    #   starlette
+    #   typing-inspection
+typing-inspection==0.4.2
+    # via
+    #   fastapi
+    #   pydantic
+urllib3==2.7.0
+    # via requests
+uvicorn==0.46.0
+    # via taskly-backend (pyproject.toml)
+uvloop==0.22.1
+    # via uvicorn
+watchfiles==1.1.1
+    # via uvicorn
+websockets==16.0
+    # via uvicorn
+yarl==1.23.0
+    # via aiohttp

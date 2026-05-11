@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+  ],
+  "env": {
+    "VITE_API_URL": "@backend-url"
+  }
+}
