@@ -8,14 +8,6 @@
       "maxDuration": 10
     }
   },
-  "env": {
-    "DATABASE_URL": "@turso-database-url",
-    "TURSO_AUTH_TOKEN": "@turso-auth-token",
-    "SESSION_SECRET": "@session-secret",
-    "ADMIN_USERNAME": "@admin-username",
-    "ADMIN_PASSWORD": "@admin-password",
-    "FRONTEND_URL": "@frontend-url"
-  },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/backend/api/index.py" },
     { "source": "/((?!assets/).*)", "destination": "/index.html" }
