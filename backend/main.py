@@ -11,7 +11,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 import database
 import services.user_service as user_service
-from routers import auth, tasks, admin
+from routers import auth, tasks, admin, meta
 
 load_dotenv()
 
@@ -71,6 +71,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(tasks.router)
 app.include_router(admin.router)
+app.include_router(meta.router)
 
 
 @app.get("/api/health")

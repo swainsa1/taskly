@@ -1,14 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+const AVATARS = [
+  {id:'dino',emoji:'🦕'}, {id:'unicorn',emoji:'🦄'}, {id:'car',emoji:'🚗'},
+  {id:'princess',emoji:'👸'}, {id:'fairy',emoji:'🧚'}, {id:'butterfly',emoji:'🦋'},
+  {id:'robot',emoji:'🤖'}, {id:'superhero',emoji:'🦸'}, {id:'soccer',emoji:'⚽'},
+  {id:'dragon',emoji:'🐉'}, {id:'cat',emoji:'🐱'}, {id:'star',emoji:'🌟'},
+];
+
 export default function RegisterForm({ onSubmit, isLoading, error }) {
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
+  const [avatar, setAvatar] = useState('');
 
   function handleSubmit(e) {
     e.preventDefault();
-    onSubmit(username.trim(), displayName.trim(), password);
+    onSubmit(username.trim(), displayName.trim(), password, avatar || null);
   }
 
   return (
@@ -46,6 +54,25 @@ export default function RegisterForm({ onSubmit, isLoading, error }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Pick your avatar <span className="text-muted font-normal">(optional)</span>
+        </label>
+        <div className="grid grid-cols-6 gap-1">
+          {AVATARS.map(a => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => setAvatar(avatar === a.emoji ? '' : a.emoji)}
+              className={`text-2xl p-1.5 rounded-lg transition-all ${avatar === a.emoji ? 'ring-2 ring-primary-500 bg-primary-50' : 'hover:bg-gray-100'}`}
+              aria-label={a.id}
+            >
+              {a.emoji}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && <p className="error-text">{error}</p>}

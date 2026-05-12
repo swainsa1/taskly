@@ -32,7 +32,7 @@ _ORDER = """
         due_date ASC
 """
 
-_COLS = "id, owner_id, description, due_date, status, created_at"
+_COLS = "id, owner_id, description, due_date, tag, status, created_at"
 
 
 async def get_tasks_for_user(user_id: int, filter: str = "all") -> list[dict]:
@@ -91,10 +91,12 @@ async def get_tasks_for_user(user_id: int, filter: str = "all") -> list[dict]:
     return rows_to_dicts(rs)
 
 
-async def create_task(user_id: int, description: str, due_date: str | None) -> dict:
+async def create_task(
+    user_id: int, description: str, due_date: str | None, tag: str = 'Others'
+) -> dict:
     rs = await execute(
-        "INSERT INTO tasks (owner_id, description, due_date) VALUES (?, ?, ?)",
-        [user_id, description, due_date],
+        "INSERT INTO tasks (owner_id, description, due_date, tag) VALUES (?, ?, ?, ?)",
+        [user_id, description, due_date, tag],
     )
     task_rs = await execute("SELECT * FROM tasks WHERE id = ?", [rs.last_insert_rowid])
     return row_to_dict(task_rs.rows[0], task_rs.columns)
@@ -128,7 +130,7 @@ async def delete_task(task_id: int) -> bool:
 
 
 _ADMIN_COLS = """
-    t.id, t.owner_id, t.description, t.due_date, t.status, t.created_at,
+    t.id, t.owner_id, t.description, t.due_date, t.tag, t.status, t.created_at,
     u.display_name AS owner_display_name, u.username AS owner_username
 """
 _ADMIN_ORDER = """

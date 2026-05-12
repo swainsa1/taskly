@@ -39,11 +39,12 @@ export default function AdminDashboard() {
   });
 
   const create = useMutation({
-    mutationFn: ({ description, due_date }) =>
+    mutationFn: ({ description, due_date, tag }) =>
       adminApi.createTask(
         selectedUserId === 'all' ? users[0]?.id : Number(selectedUserId),
         description,
-        due_date
+        due_date,
+        tag,
       ),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'tasks'] }),
   });
@@ -85,7 +86,7 @@ export default function AdminDashboard() {
       {/* Add task for selected user */}
       {createOwnerId && (
         <AddTaskForm
-          onSubmit={(description, due_date) => create.mutate({ description, due_date })}
+          onSubmit={(description, due_date, tag) => create.mutate({ description, due_date, tag })}
           isLoading={create.isPending}
           error={create.error?.message}
         />

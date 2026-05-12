@@ -68,6 +68,10 @@ export default function AdminPage() {
         {activeTab === 'tasks' && <AdminDashboard />}
         {activeTab === 'pending' && <PendingUsers />}
       </div>
+
+      <footer className="mt-auto py-3 text-center text-xs text-muted">
+        © 2026 Swain Software Solutions
+      </footer>
     </div>
   );
 }

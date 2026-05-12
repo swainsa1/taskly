@@ -22,8 +22,8 @@ export function AuthProvider({ children }) {
   }
 
   // register no longer sets session — account is pending until admin approves
-  async function register(username, display_name, password) {
-    const result = await authApi.register(username, display_name, password);
+  async function register(username, display_name, password, avatar) {
+    const result = await authApi.register(username, display_name, password, avatar);
     return result; // { message, status: "pending" }
   }
 
@@ -32,8 +32,14 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  async function updateAvatar(avatar) {
+    const u = await authApi.updateAvatar(avatar);
+    setUser(u);
+    return u;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateAvatar }}>
       {children}
     </AuthContext.Provider>
   );

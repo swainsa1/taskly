@@ -10,11 +10,11 @@ export default function RegisterPage() {
   const [registered, setRegistered] = useState(false);
   const [displayName, setDisplayName] = useState('');
 
-  async function handleSubmit(username, name, password) {
+  async function handleSubmit(username, name, password, avatar) {
     setError('');
     setIsLoading(true);
     try {
-      await register(username, name, password);
+      await register(username, name, password, avatar);
       setDisplayName(name);
       setRegistered(true);
     } catch (err) {

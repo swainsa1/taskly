@@ -7,6 +7,7 @@ from pydantic import BaseModel, field_validator
 
 import services.task_service as task_service
 from middleware.auth import get_session_user
+from tags import TAGS
 
 router = APIRouter(prefix="/api/v1/tasks", tags=["tasks"])
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -15,6 +16,7 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 class CreateTaskBody(BaseModel):
     description: str
     due_date: str   # required — every task must have a due date
+    tag: str = 'Others'
 
     @field_validator("description")
     @classmethod
@@ -35,12 +37,20 @@ class CreateTaskBody(BaseModel):
             raise ValueError("due_date must be YYYY-MM-DD")
         return v.strip()
 
+    @field_validator("tag")
+    @classmethod
+    def validate_tag(cls, v: str) -> str:
+        if v not in TAGS:
+            return 'Others'
+        return v
+
 
 def _fmt(task: dict) -> dict:
     return {
         "id": task["id"],
         "description": task["description"],
         "due_date": task["due_date"],
+        "tag": task.get("tag", "Others"),
         "status": task["status"],
         "created_at": task["created_at"],
     }
@@ -57,7 +67,7 @@ async def list_tasks(
 
 @router.post("", status_code=201)
 async def create_task(body: CreateTaskBody, user: dict = Depends(get_session_user)):
-    task = await task_service.create_task(user["id"], body.description, body.due_date)
+    task = await task_service.create_task(user["id"], body.description, body.due_date, body.tag)
     return _fmt(task)
 
 

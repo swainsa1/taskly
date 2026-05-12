@@ -8,6 +8,7 @@ from pydantic import BaseModel, field_validator
 import services.task_service as task_service
 import services.user_service as user_service
 from middleware.auth import require_admin
+from tags import TAGS
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -17,6 +18,7 @@ class AdminCreateTaskBody(BaseModel):
     owner_id: int
     description: str
     due_date: str   # required
+    tag: str = 'Others'
 
     @field_validator("description")
     @classmethod
@@ -37,6 +39,13 @@ class AdminCreateTaskBody(BaseModel):
             raise ValueError("due_date must be YYYY-MM-DD")
         return v.strip()
 
+    @field_validator("tag")
+    @classmethod
+    def validate_tag(cls, v: str) -> str:
+        if v not in TAGS:
+            return 'Others'
+        return v
+
 
 def _fmt(task: dict) -> dict:
     d = {
@@ -44,6 +53,7 @@ def _fmt(task: dict) -> dict:
         "owner_id": task["owner_id"],
         "description": task["description"],
         "due_date": task["due_date"],
+        "tag": task.get("tag", "Others"),
         "status": task["status"],
         "created_at": task["created_at"],
     }
@@ -106,7 +116,7 @@ async def create_task_for_user(body: AdminCreateTaskBody, _admin: dict = Depends
     owner = await user_service.find_by_id(body.owner_id)
     if not owner:
         raise HTTPException(status_code=404, detail="user not found")
-    task = await task_service.create_task(body.owner_id, body.description, body.due_date)
+    task = await task_service.create_task(body.owner_id, body.description, body.due_date, body.tag)
     return _fmt(task)
 
 

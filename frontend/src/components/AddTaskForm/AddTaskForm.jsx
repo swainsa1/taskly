@@ -1,10 +1,12 @@
 import { useState } from 'react';
 
 const MAX = 120;
+const TAGS = ["Others", "School", "Home", "Sports", "Art", "Reading", "Chores", "Fun"];
 
 export default function AddTaskForm({ onSubmit, isLoading, error }) {
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [tag, setTag] = useState('Others');
 
   const remaining = MAX - description.length;
   const atLimit = description.length >= MAX;
@@ -13,9 +15,10 @@ export default function AddTaskForm({ onSubmit, isLoading, error }) {
   function handleSubmit(e) {
     e.preventDefault();
     if (!canSubmit) return;
-    onSubmit(description.trim(), dueDate);
+    onSubmit(description.trim(), dueDate, tag);
     setDescription('');
     setDueDate('');
+    setTag('Others');
   }
 
   return (
@@ -36,6 +39,15 @@ export default function AddTaskForm({ onSubmit, isLoading, error }) {
           </span>
         </div>
       </div>
+
+      <select
+        className="input"
+        value={tag}
+        onChange={(e) => setTag(e.target.value)}
+        aria-label="Task tag"
+      >
+        {TAGS.map(t => <option key={t} value={t}>{t}</option>)}
+      </select>
 
       <div className="flex gap-2">
         <div className="flex-1">

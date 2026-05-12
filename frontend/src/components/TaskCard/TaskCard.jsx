@@ -1,5 +1,16 @@
 const TODAY = new Date().toISOString().slice(0, 10);
 
+const TAG_COLORS = {
+  'Others':  'bg-gray-100 text-gray-500',
+  'School':  'bg-blue-100 text-blue-700',
+  'Home':    'bg-green-100 text-green-700',
+  'Sports':  'bg-orange-100 text-orange-700',
+  'Art':     'bg-purple-100 text-purple-700',
+  'Reading': 'bg-yellow-100 text-yellow-800',
+  'Chores':  'bg-red-100 text-red-700',
+  'Fun':     'bg-pink-100 text-pink-700',
+};
+
 function formatDate(dateStr) {
   if (!dateStr) return null;
   const [year, month, day] = dateStr.split('-');
@@ -63,6 +74,11 @@ export default function TaskCard({ task, onComplete, onReopen, showOwner = false
         <p className={['text-sm', closed ? 'line-through text-muted' : 'text-gray-900'].join(' ')}>
           {task.description}
         </p>
+        {task.tag && (
+          <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full font-medium ${TAG_COLORS[task.tag] || 'bg-gray-100 text-gray-500'}`}>
+            {task.tag}
+          </span>
+        )}
         {task.due_date && (
           <p className={['text-xs mt-0.5', overdue ? 'text-red-500 font-medium' : 'text-muted'].join(' ')}>
             {overdue && '⚠ '}

@@ -30,19 +30,20 @@ async function request(method, path, body) {
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 export const authApi = {
-  register: (username, display_name, password) =>
-    request('POST', '/api/v1/auth/register', { username, display_name, password }),
+  register: (username, display_name, password, avatar) =>
+    request('POST', '/api/v1/auth/register', { username, display_name, password, avatar }),
   login: (username, password) =>
     request('POST', '/api/v1/auth/login', { username, password }),
   logout: () => request('POST', '/api/v1/auth/logout'),
   me: () => request('GET', '/api/v1/auth/me'),
+  updateAvatar: (avatar) => request('PATCH', '/api/v1/auth/avatar', { avatar }),
 };
 
 // ── Tasks ───────────────────────────────────────────────────────────────────
 export const tasksApi = {
   list: (filter = 'all') => request('GET', `/api/v1/tasks?filter=${filter}`),
-  create: (description, due_date) =>
-    request('POST', '/api/v1/tasks', { description, due_date: due_date || null }),
+  create: (description, due_date, tag = 'Others') =>
+    request('POST', '/api/v1/tasks', { description, due_date: due_date || null, tag }),
   complete: (id) => request('PATCH', `/api/v1/tasks/${id}/complete`),
   reopen:   (id) => request('PATCH', `/api/v1/tasks/${id}/reopen`),
 };
@@ -60,13 +61,19 @@ export const adminApi = {
     if (userId && userId !== 'all') params.set('userId', userId);
     return request('GET', `/api/v1/admin/tasks?${params}`);
   },
-  createTask: (owner_id, description, due_date) =>
+  createTask: (owner_id, description, due_date, tag = 'Others') =>
     request('POST', '/api/v1/admin/tasks', {
       owner_id,
       description,
       due_date: due_date || null,
+      tag,
     }),
   completeTask: (id) => request('PATCH', `/api/v1/admin/tasks/${id}/complete`),
   reopenTask:   (id) => request('PATCH', `/api/v1/admin/tasks/${id}/reopen`),
   deleteTask:   (id) => request('DELETE', `/api/v1/admin/tasks/${id}`),
+};
+
+// ── Meta ────────────────────────────────────────────────────────────────────
+export const metaApi = {
+  tags: () => request('GET', '/api/v1/tags'),
 };

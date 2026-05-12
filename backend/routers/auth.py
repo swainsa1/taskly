@@ -13,6 +13,7 @@ class RegisterBody(BaseModel):
     username: str
     display_name: str
     password: str
+    avatar: str | None = None
 
     @field_validator("username")
     @classmethod
@@ -43,6 +44,10 @@ class LoginBody(BaseModel):
     password: str
 
 
+class AvatarBody(BaseModel):
+    avatar: str
+
+
 def _user_payload(user: dict) -> dict:
     return {
         "id": user["id"],
@@ -50,6 +55,7 @@ def _user_payload(user: dict) -> dict:
         "display_name": user["display_name"],
         "role": user["role"],
         "status": user["status"],
+        "avatar": user.get("avatar"),
     }
 
 
@@ -60,7 +66,8 @@ async def register(body: RegisterBody, request: Request):
         raise HTTPException(status_code=409, detail="username already taken")
 
     user = await user_service.create_user(
-        body.username, body.display_name, body.password
+        body.username, body.display_name, body.password,
+        avatar=body.avatar,
         # status defaults to "pending" — admin must approve before login works
     )
     # Do NOT set a session — user must wait for approval
@@ -104,3 +111,12 @@ def logout(request: Request):
 @router.get("/me")
 def me(request: Request):
     return get_session_user(request)
+
+
+@router.patch("/avatar")
+async def update_avatar(body: AvatarBody, request: Request):
+    user = get_session_user(request)
+    updated = await user_service.update_avatar(user["id"], body.avatar)
+    payload = _user_payload(updated)
+    request.session["user"] = payload
+    return payload

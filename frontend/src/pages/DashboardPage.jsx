@@ -24,8 +24,8 @@ export default function DashboardPage() {
   const completeTask = useCompleteTask();
   const reopenTask = useReopenTask();
 
-  async function handleAddTask(description, dueDate) {
-    await createTask.mutateAsync({ description, due_date: dueDate });
+  async function handleAddTask(description, dueDate, tag) {
+    await createTask.mutateAsync({ description, due_date: dueDate, tag });
   }
 
   async function handleComplete(id) {
@@ -69,6 +69,10 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <footer className="mt-auto py-3 text-center text-xs text-muted">
+        © 2026 Swain Software Solutions
+      </footer>
     </div>
   );
 }

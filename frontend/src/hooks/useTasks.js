@@ -11,7 +11,7 @@ export function useTasksQuery(filter = 'all') {
 export function useCreateTask() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ description, due_date }) => tasksApi.create(description, due_date),
+    mutationFn: ({ description, due_date, tag }) => tasksApi.create(description, due_date, tag),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
   });
 }

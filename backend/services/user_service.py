@@ -34,16 +34,22 @@ async def create_user(
     password: str,
     role: str = "user",
     status: str = "pending",   # new users wait for admin approval
+    avatar: str | None = None,
 ) -> dict:
     password_hash = _hash_password(password)
     rs = await execute(
         """
-        INSERT INTO users (username, display_name, password_hash, role, status)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO users (username, display_name, password_hash, role, status, avatar)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
-        [username, display_name, password_hash, role, status],
+        [username, display_name, password_hash, role, status, avatar],
     )
     return await find_by_id(rs.last_insert_rowid)
+
+
+async def update_avatar(user_id: int, avatar: str) -> dict | None:
+    await execute("UPDATE users SET avatar = ? WHERE id = ?", [avatar, user_id])
+    return await find_by_id(user_id)
 
 
 async def list_users(status: str | None = None) -> list[dict]:
