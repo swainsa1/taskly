@@ -1,15 +1,19 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "functions": {
-    "api/index.py": {
-      "runtime": "@vercel/python@6.40.0",
-      "maxDuration": 10
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build@2.9.25",
+      "config": { "distDir": "dist" }
+    },
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python@6.40.0"
     }
-  },
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/index.py" },
-    { "source": "/((?!api).*)", "destination": "/index.html" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
