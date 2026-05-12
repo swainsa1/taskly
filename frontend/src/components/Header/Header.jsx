@@ -55,7 +55,7 @@ export default function Header() {
                 Admin
               </Link>
             )}
-            <span className="text-sm text-muted hidden sm:block">{user.display_name}</span>
+            <span className="text-sm text-muted">{user.display_name}</span>
             {/* Avatar button */}
             <button
               onClick={() => setShowAvatarPicker(v => !v)}
