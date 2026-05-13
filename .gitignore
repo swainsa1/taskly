@@ -14,6 +14,7 @@ node_modules/
 **/db/*.sqlite3
 
 # Build output
+dist/
 frontend/dist/
 frontend/.vite/
 
