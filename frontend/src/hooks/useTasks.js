@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { tasksApi } from '../services/api';
+import { tasksApi, metaApi } from '../services/api';
 
 export function useTasksQuery(filter = 'all') {
   return useQuery({
@@ -29,5 +29,13 @@ export function useReopenTask() {
   return useMutation({
     mutationFn: (id) => tasksApi.reopen(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tasks'] }),
+  });
+}
+
+export function useTags() {
+  return useQuery({
+    queryKey: ['tags'],
+    queryFn: () => metaApi.tags().then(r => r.tags),
+    staleTime: Infinity,
   });
 }

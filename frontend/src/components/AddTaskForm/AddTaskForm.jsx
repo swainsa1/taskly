@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { useTags } from '../../hooks/useTasks';
 
 const MAX = 120;
-const TAGS = ["Others", "School", "Home", "Sports", "Art", "Reading", "Chores", "Fun"];
 
 export default function AddTaskForm({ onSubmit, isLoading, error }) {
+  const { data: tags = [] } = useTags();
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [tag, setTag] = useState('Others');
@@ -46,7 +47,7 @@ export default function AddTaskForm({ onSubmit, isLoading, error }) {
         onChange={(e) => setTag(e.target.value)}
         aria-label="Task tag"
       >
-        {TAGS.map(t => <option key={t} value={t}>{t}</option>)}
+        {tags.map(t => <option key={t} value={t}>{t}</option>)}
       </select>
 
       <div className="flex gap-2">
