@@ -1,4 +1,4 @@
-TAGS = ["Others", "School", "Home", "Sports", "Art", "Reading", "Chores", "Fun"]
+TAGS = ["Others", "Math", "Science", "BOB", "BB", "Reading", "English", "GS","", "MS", "Geography", "Band", "Art", "Home", "Technology"]
 
 AVATARS = [
     {"id": "dino",      "emoji": "🦕", "label": "Dino"},
