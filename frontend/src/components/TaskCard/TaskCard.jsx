@@ -15,6 +15,7 @@ function formatDate(dateStr) {
   if (!dateStr) return null;
   const [year, month, day] = dateStr.split('-');
   return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString('en-US', {
+    weekday: 'short',
     month: 'short',
     day: 'numeric',
     year: 'numeric',
