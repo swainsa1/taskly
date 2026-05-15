@@ -120,6 +120,54 @@ async def create_task_for_user(body: AdminCreateTaskBody, _admin: dict = Depends
     return _fmt(task)
 
 
+class AdminBulkCreateTaskBody(BaseModel):
+    owner_id: int
+    description: str
+    tag: str = 'Others'
+    dates: list[str]  # list of YYYY-MM-DD strings, max 5
+
+    @field_validator('description')
+    @classmethod
+    def validate_description(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError('description is required')
+        if len(v) > 120:
+            raise ValueError('description must be 120 characters or fewer')
+        return v
+
+    @field_validator('dates')
+    @classmethod
+    def validate_dates(cls, v: list) -> list:
+        if not v:
+            raise ValueError('at least one date required')
+        if len(v) > 5:
+            raise ValueError('max 5 dates')
+        for d in v:
+            if not DATE_RE.match(d):
+                raise ValueError(f'invalid date: {d}')
+        return v
+
+    @field_validator('tag')
+    @classmethod
+    def validate_tag(cls, v: str) -> str:
+        if v not in TAGS:
+            return 'Others'
+        return v
+
+
+@router.post("/tasks/bulk", status_code=201)
+async def bulk_create_tasks(body: AdminBulkCreateTaskBody, _admin: dict = Depends(require_admin)):
+    owner = await user_service.find_by_id(body.owner_id)
+    if not owner:
+        raise HTTPException(status_code=404, detail="user not found")
+    tasks = []
+    for date in body.dates:
+        task = await task_service.create_task(body.owner_id, body.description, date, body.tag)
+        tasks.append(_fmt(task))
+    return tasks
+
+
 @router.patch("/tasks/{task_id}/complete")
 async def complete_task(task_id: int, admin: dict = Depends(require_admin)):
     try:

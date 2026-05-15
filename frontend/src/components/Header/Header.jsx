@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AVATARS = [
@@ -12,8 +12,6 @@ const AVATARS = [
 export default function Header() {
   const { user, logout, updateAvatar } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const isAdminView = location.pathname === '/admin';
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const pickerRef = useRef(null);
 
@@ -49,23 +47,6 @@ export default function Header() {
         {/* Right side */}
         {user && (
           <div className="flex items-center gap-3 relative" ref={pickerRef}>
-            {user.role === 'admin' && (
-              isAdminView ? (
-                <Link
-                  to="/dashboard"
-                  className="text-sm font-bold text-primary-500 hover:text-primary-600 transition-colors"
-                >
-                  User View
-                </Link>
-              ) : (
-                <Link
-                  to="/admin"
-                  className="text-sm font-bold text-red-500 hover:text-red-600 transition-colors"
-                >
-                  Admin View
-                </Link>
-              )
-            )}
             <span className="text-sm text-muted">{user.display_name}</span>
             {/* Avatar button */}
             <button

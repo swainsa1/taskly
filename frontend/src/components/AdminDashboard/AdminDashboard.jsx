@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../services/api';
 import TaskCard from '../TaskCard/TaskCard';
-import AddTaskForm from '../AddTaskForm/AddTaskForm';
+import AdminCreateTaskForm from './AdminCreateTaskForm';
 
 export default function AdminDashboard() {
   const [selectedUserId, setSelectedUserId] = useState('all');
@@ -38,22 +38,11 @@ export default function AdminDashboard() {
     },
   });
 
-  const create = useMutation({
-    mutationFn: ({ description, due_date, tag }) =>
-      adminApi.createTask(
-        selectedUserId === 'all' ? users[0]?.id : Number(selectedUserId),
-        description,
-        due_date,
-        tag,
-      ),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'tasks'] }),
-  });
-
-  const createOwnerId =
-    selectedUserId === 'all' ? users[0]?.id : Number(selectedUserId);
-
   return (
     <div className="space-y-4">
+      {/* Create task form */}
+      <AdminCreateTaskForm users={users} />
+
       {/* Filters */}
       <div className="card p-4 flex flex-wrap gap-3 items-center">
         <select
@@ -82,15 +71,6 @@ export default function AdminDashboard() {
           <option value="month">This month</option>
         </select>
       </div>
-
-      {/* Add task for selected user */}
-      {createOwnerId && (
-        <AddTaskForm
-          onSubmit={(description, due_date, tag) => create.mutate({ description, due_date, tag })}
-          isLoading={create.isPending}
-          error={create.error?.message}
-        />
-      )}
 
       {/* Task list */}
       <div className="card overflow-hidden">
