@@ -124,7 +124,7 @@ class AdminBulkCreateTaskBody(BaseModel):
     owner_id: int
     description: str
     tag: str = 'Others'
-    dates: list[str]  # list of YYYY-MM-DD strings, max 5
+    dates: list[str]  # list of YYYY-MM-DD strings, max 31
 
     @field_validator('description')
     @classmethod
@@ -141,8 +141,8 @@ class AdminBulkCreateTaskBody(BaseModel):
     def validate_dates(cls, v: list) -> list:
         if not v:
             raise ValueError('at least one date required')
-        if len(v) > 5:
-            raise ValueError('max 5 dates')
+        if len(v) > 31:
+            raise ValueError('max 31 dates')
         for d in v:
             if not DATE_RE.match(d):
                 raise ValueError(f'invalid date: {d}')

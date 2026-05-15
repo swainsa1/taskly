@@ -19,7 +19,12 @@ async function request(method, path, body) {
   if (res.status === 204) return null;
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const msg = data?.detail || data?.message || `HTTP ${res.status}`;
+    const raw = data?.detail;
+    const msg = typeof raw === 'string'
+      ? raw
+      : Array.isArray(raw)
+        ? raw.map(e => e.msg ?? JSON.stringify(e)).join('; ')
+        : data?.message || `HTTP ${res.status}`;
     const err = new Error(msg);
     err.status = res.status;
     err.data = data;
