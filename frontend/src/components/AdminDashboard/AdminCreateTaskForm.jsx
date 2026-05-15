@@ -2,17 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../services/api';
 import { useTags } from '../../hooks/useTasks';
-
-const TAG_COLORS = {
-  'Others':  { base: 'bg-gray-100 text-gray-600 border-gray-200',      active: 'bg-gray-500 text-white border-gray-500' },
-  'School':  { base: 'bg-blue-50 text-blue-600 border-blue-200',       active: 'bg-blue-500 text-white border-blue-500' },
-  'Home':    { base: 'bg-green-50 text-green-700 border-green-200',    active: 'bg-green-500 text-white border-green-500' },
-  'Sports':  { base: 'bg-orange-50 text-orange-600 border-orange-200', active: 'bg-orange-500 text-white border-orange-500' },
-  'Art':     { base: 'bg-purple-50 text-purple-600 border-purple-200', active: 'bg-purple-500 text-white border-purple-500' },
-  'Reading': { base: 'bg-yellow-50 text-yellow-700 border-yellow-200', active: 'bg-yellow-400 text-white border-yellow-400' },
-  'Chores':  { base: 'bg-red-50 text-red-600 border-red-200',          active: 'bg-red-500 text-white border-red-500' },
-  'Fun':     { base: 'bg-pink-50 text-pink-600 border-pink-200',       active: 'bg-pink-500 text-white border-pink-500' },
-};
+import { tagPillClass } from '../../utils/tagColors';
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -102,20 +92,16 @@ export default function AdminCreateTaskForm({ users, onCreated }) {
 
       {/* Tag pills */}
       <div className="flex flex-wrap gap-1.5">
-        {tags.map(t => {
-          const colors = TAG_COLORS[t] || TAG_COLORS['Others'];
-          const isSelected = tag === t;
-          return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTag(t)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${isSelected ? colors.active : colors.base} hover:opacity-80`}
-            >
-              {t}
-            </button>
-          );
-        })}
+        {tags.map(t => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTag(t)}
+            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${tagPillClass(t, tag === t)} hover:opacity-80`}
+          >
+            {t}
+          </button>
+        ))}
       </div>
 
       {/* Date + Repeat */}
