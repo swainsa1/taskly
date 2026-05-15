@@ -43,15 +43,15 @@ export default function PendingUsers() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-sm text-muted">No pending requests — you're all caught up!</p>
+        <p className="text-sm text-muted">No users waiting for approval — you're all caught up!</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted">
-        {pending.length} account{pending.length !== 1 ? 's' : ''} waiting for approval
+      <p className="text-sm font-medium text-gray-700">
+        {pending.length} user{pending.length !== 1 ? 's' : ''} waiting for approval
       </p>
 
       {pending.map((user) => (

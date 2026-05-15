@@ -9,7 +9,7 @@ import { adminApi } from '../services/api';
 
 const TABS = [
   { id: 'tasks', label: 'Tasks' },
-  { id: 'pending', label: 'Pending Approvals' },
+  { id: 'pending', label: 'Waiting for Approval' },
 ];
 
 export default function AdminPage() {
