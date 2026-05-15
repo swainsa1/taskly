@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../services/api';
-
-const TAGS = ['Others', 'School', 'Home', 'Sports', 'Art', 'Reading', 'Chores', 'Fun'];
+import { useTags } from '../../hooks/useTasks';
 
 const TAG_COLORS = {
   'Others':  { base: 'bg-gray-100 text-gray-600 border-gray-200',      active: 'bg-gray-500 text-white border-gray-500' },
@@ -17,39 +16,52 @@ const TAG_COLORS = {
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
-function generateDates(startDate, repeat) {
+function isWeekend(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const day = new Date(y, m - 1, d).getDay();
+  return day === 0 || day === 6;
+}
+
+function generateDates(startDate, repeat, skipWeekends) {
   if (!startDate) return [];
-  const start = new Date(startDate + 'T00:00:00');
-  if (repeat === 'week') {
-    return Array.from({ length: 4 }, (_, i) => {
-      const d = new Date(start);
-      d.setDate(d.getDate() + i * 7);
-      return d.toISOString().slice(0, 10);
-    });
+  const addDays = (iso, n) => {
+    const [y, m, d] = iso.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    date.setDate(date.getDate() + n);
+    return date.toISOString().slice(0, 10);
+  };
+
+  let totalDays;
+  if (repeat === 'week') totalDays = 7;
+  else if (repeat === 'month') totalDays = 30;
+  else totalDays = 1;
+
+  const dates = [];
+  for (let i = 0; i < totalDays; i++) {
+    const iso = addDays(startDate, i);
+    if (skipWeekends && isWeekend(iso)) continue;
+    dates.push(iso);
   }
-  if (repeat === 'month') {
-    const d2 = new Date(start);
-    d2.setMonth(d2.getMonth() + 1);
-    return [startDate, d2.toISOString().slice(0, 10)];
-  }
-  return [startDate];
+  return dates;
 }
 
 function formatDate(iso) {
-  const [y, m, d] = iso.split('-');
-  return new Date(+y, +m - 1, +d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 export default function AdminCreateTaskForm({ users, onCreated }) {
   const qc = useQueryClient();
+  const { data: tags = [] } = useTags();
   const [ownerId, setOwnerId] = useState('');
   const [description, setDescription] = useState('');
   const [tag, setTag] = useState('Others');
   const [startDate, setStartDate] = useState('');
   const [repeat, setRepeat] = useState('none');
+  const [skipWeekends, setSkipWeekends] = useState(false);
 
-  const dates = generateDates(startDate, repeat);
-  const canSubmit = ownerId && description.trim() && startDate;
+  const dates = generateDates(startDate, repeat, skipWeekends);
+  const canSubmit = ownerId && description.trim() && startDate && dates.length > 0;
 
   const create = useMutation({
     mutationFn: () => adminApi.bulkCreateTask(Number(ownerId), description.trim(), tag, dates),
@@ -58,6 +70,7 @@ export default function AdminCreateTaskForm({ users, onCreated }) {
       setDescription('');
       setStartDate('');
       setRepeat('none');
+      setSkipWeekends(false);
       setTag('Others');
       onCreated?.();
     },
@@ -92,8 +105,8 @@ export default function AdminCreateTaskForm({ users, onCreated }) {
 
       {/* Tag pills */}
       <div className="flex flex-wrap gap-1.5">
-        {TAGS.map(t => {
-          const colors = TAG_COLORS[t];
+        {tags.map(t => {
+          const colors = TAG_COLORS[t] || TAG_COLORS['Others'];
           const isSelected = tag === t;
           return (
             <button
@@ -125,8 +138,8 @@ export default function AdminCreateTaskForm({ users, onCreated }) {
           <div className="flex gap-2">
             {[
               { value: 'none',  label: 'One time' },
-              { value: 'week',  label: 'Weekly ×4' },
-              { value: 'month', label: 'Monthly ×2' },
+              { value: 'week',  label: 'Daily ×7' },
+              { value: 'month', label: 'Daily ×30' },
             ].map(opt => (
               <button
                 key={opt.value}
@@ -145,19 +158,38 @@ export default function AdminCreateTaskForm({ users, onCreated }) {
         </div>
       </div>
 
+      {/* Skip weekends toggle — only relevant for multi-day repeats */}
+      {repeat !== 'none' && (
+        <label className="flex items-center gap-2 cursor-pointer select-none w-fit">
+          <input
+            type="checkbox"
+            checked={skipWeekends}
+            onChange={(e) => setSkipWeekends(e.target.checked)}
+            className="w-4 h-4 accent-primary-500"
+          />
+          <span className="text-xs text-gray-600">Skip weekends</span>
+        </label>
+      )}
+
       {/* Date preview */}
       {dates.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-3 space-y-1">
+        <div className="bg-gray-50 rounded-lg p-3">
           <p className="text-xs font-medium text-muted mb-2">
             {dates.length} task{dates.length !== 1 ? 's' : ''} will be created:
           </p>
-          {dates.map((d, i) => (
-            <div key={d} className="flex items-center gap-2 text-xs text-gray-600">
-              <span className="w-4 h-4 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center text-[10px] font-bold flex-shrink-0">{i + 1}</span>
-              {formatDate(d)}
-            </div>
-          ))}
+          <div className="max-h-40 overflow-y-auto space-y-1">
+            {dates.map((d, i) => (
+              <div key={d} className="flex items-center gap-2 text-xs text-gray-600">
+                <span className="w-4 h-4 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center text-[10px] font-bold flex-shrink-0">{i + 1}</span>
+                {formatDate(d)}
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+
+      {startDate && dates.length === 0 && (
+        <p className="text-xs text-orange-500">All selected days are weekends — no tasks would be created.</p>
       )}
 
       {create.error && <p className="text-xs text-red-500">{create.error.message}</p>}
