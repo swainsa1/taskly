@@ -26,16 +26,13 @@ function generateDates(startDate, repeat, skipWeekends) {
   if (!startDate) return [];
   const addDays = (iso, n) => {
     const [y, m, d] = iso.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-    date.setDate(date.getDate() + n);
-    return date.toISOString().slice(0, 10);
+    const date = new Date(y, m - 1, d + n);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   };
 
-  let totalDays;
-  if (repeat === 'week') totalDays = 7;
-  else if (repeat === 'month') totalDays = 30;
-  else totalDays = 1;
+  if (repeat === 'none') return [startDate];
 
+  const totalDays = repeat === 'week' ? 7 : 30;
   const dates = [];
   for (let i = 0; i < totalDays; i++) {
     const iso = addDays(startDate, i);
