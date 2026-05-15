@@ -40,7 +40,7 @@ function formatDate(iso) {
   return new Date(+y, +m - 1, +d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export default function AdminCreateTaskForm({ users }) {
+export default function AdminCreateTaskForm({ users, onCreated }) {
   const qc = useQueryClient();
   const [ownerId, setOwnerId] = useState('');
   const [description, setDescription] = useState('');
@@ -59,6 +59,7 @@ export default function AdminCreateTaskForm({ users }) {
       setStartDate('');
       setRepeat('none');
       setTag('Others');
+      onCreated?.();
     },
   });
 
