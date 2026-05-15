@@ -65,13 +65,19 @@ async def get_tasks_for_user(user_id: int, filter: str = "all") -> list[dict]:
         )
     elif filter == "week":
         start, end = _week_bounds()
+        today = _today()
         rs = await execute(
             f"""
             SELECT {_COLS} FROM tasks
-            WHERE owner_id = ? AND due_date IS NOT NULL AND due_date BETWEEN ? AND ?
+            WHERE owner_id = ? AND due_date IS NOT NULL
+              AND (
+                (status = 'open'   AND due_date <= ?)
+                OR
+                (status = 'closed' AND due_date BETWEEN ? AND ?)
+              )
             {_ORDER}
             """,
-            [user_id, start, end],
+            [user_id, end, start, end],
         )
     elif filter == "month":
         start, end = _month_bounds()
@@ -154,8 +160,8 @@ async def get_all_tasks(user_id: int | None = None, filter: str = "all") -> list
         params = base_params + [today, today]
     elif filter == "week":
         start, end = _week_bounds()
-        where = "AND t.due_date IS NOT NULL AND t.due_date BETWEEN ? AND ?"
-        params = base_params + [start, end]
+        where = "AND t.due_date IS NOT NULL AND ((t.status='open' AND t.due_date <= ?) OR (t.status='closed' AND t.due_date BETWEEN ? AND ?))"
+        params = base_params + [end, start, end]
     elif filter == "month":
         start, end = _month_bounds()
         where = "AND t.due_date IS NOT NULL AND t.due_date BETWEEN ? AND ?"
