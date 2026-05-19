@@ -41,6 +41,7 @@ export default function Header() {
       <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center gap-2">
+          <img src="/android-chrome-192x192.png" alt="Taskly" className="w-7 h-7" />
           <span className="text-primary-500 font-bold text-xl tracking-tight">Taskly</span>
         </Link>
 

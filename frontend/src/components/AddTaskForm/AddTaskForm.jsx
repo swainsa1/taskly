@@ -3,11 +3,12 @@ import { useTags } from '../../hooks/useTasks';
 import { tagPillClass } from '../../utils/tagColors';
 
 const MAX = 120;
+const TODAY = new Date().toISOString().slice(0, 10);
 
 export default function AddTaskForm({ onSubmit, isLoading, error }) {
   const { data: tags = [] } = useTags();
   const [description, setDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [dueDate, setDueDate] = useState(TODAY);
   const [tag, setTag] = useState('Others');
 
   const remaining = MAX - description.length;
@@ -19,7 +20,7 @@ export default function AddTaskForm({ onSubmit, isLoading, error }) {
     if (!canSubmit) return;
     onSubmit(description.trim(), dueDate, tag);
     setDescription('');
-    setDueDate('');
+    setDueDate(TODAY);
     setTag('Others');
   }
 
@@ -59,15 +60,12 @@ export default function AddTaskForm({ onSubmit, isLoading, error }) {
         <div className="flex-1">
           <input
             type="date"
-            className={['input', !dueDate ? 'border-orange-300 focus:ring-orange-400 focus:border-orange-400' : ''].join(' ')}
+            className="input"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            aria-label="Due date (required)"
+            aria-label="Due date"
             required
           />
-          {!dueDate && (
-            <p className="text-xs text-orange-500 mt-1">Due date is required</p>
-          )}
         </div>
         <button
           type="submit"

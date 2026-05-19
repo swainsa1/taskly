@@ -42,7 +42,10 @@ export default function LoginPage() {
     <div className="min-h-dvh bg-surface flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary-500 tracking-tight">Taskly</h1>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <img src="/android-chrome-192x192.png" alt="Taskly" className="w-10 h-10" />
+            <h1 className="text-3xl font-bold text-primary-500 tracking-tight">Taskly</h1>
+          </div>
           <p className="text-muted text-sm mt-1">Sign in to your account</p>
         </div>
         <div className="card p-6">
