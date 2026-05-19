@@ -90,6 +90,9 @@ if os.getenv("NODE_ENV") == "production":
 
         @app.get("/{full_path:path}")
         def spa_fallback(full_path: str):
+            candidate = dist / full_path
+            if candidate.is_file():
+                return FileResponse(str(candidate))
             return FileResponse(str(dist / "index.html"))
 
 
