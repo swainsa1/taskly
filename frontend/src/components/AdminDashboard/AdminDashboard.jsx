@@ -14,6 +14,8 @@ export default function AdminDashboard() {
   const [selectedUserId, setSelectedUserId] = useState('all');
   const [filter, setFilter] = useState('overdue');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [cleanupDueBefore, setCleanupDueBefore] = useState('');
+  const [cleanupConfirm, setCleanupConfirm] = useState(false);
   const qc = useQueryClient();
 
   const { data: users = [] } = useQuery({
@@ -44,6 +46,16 @@ export default function AdminDashboard() {
       qc.invalidateQueries({ queryKey: ['admin', 'tasks'] });
     },
   });
+
+  const bulkComplete = useMutation({
+    mutationFn: () => adminApi.bulkCompleteTasks(Number(selectedUserId), cleanupDueBefore),
+    onSuccess: () => {
+      setCleanupConfirm(false);
+      qc.invalidateQueries({ queryKey: ['admin', 'tasks'] });
+    },
+  });
+
+  const selectedUser = users.find(u => String(u.id) === String(selectedUserId));
 
   return (
     <div className="space-y-4">
@@ -106,6 +118,59 @@ export default function AdminDashboard() {
                 <option value="all">All time</option>
               </select>
             </div>
+
+            {/* Bulk cleanup — mark a user's active tasks as done */}
+            {selectedUser && (
+              <div className="px-4 py-3 border-b border-border bg-gray-50 flex flex-wrap gap-3 items-end">
+                <div>
+                  <label className="block text-xs text-muted mb-1">
+                    Clean up due on/before (optional)
+                  </label>
+                  <input
+                    type="date"
+                    className="input max-w-[160px]"
+                    value={cleanupDueBefore}
+                    onChange={(e) => {
+                      setCleanupDueBefore(e.target.value);
+                      setCleanupConfirm(false);
+                    }}
+                  />
+                </div>
+                {cleanupConfirm ? (
+                  <div className="flex gap-2">
+                    <button
+                      className="btn-danger text-xs px-3 py-2"
+                      disabled={bulkComplete.isPending}
+                      onClick={() => bulkComplete.mutate()}
+                    >
+                      {bulkComplete.isPending ? 'Marking done…' : 'Confirm'}
+                    </button>
+                    <button
+                      className="btn-ghost text-xs px-3 py-2"
+                      onClick={() => setCleanupConfirm(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="btn-primary text-xs px-3 py-2"
+                    onClick={() => setCleanupConfirm(true)}
+                  >
+                    Mark {selectedUser.display_name}'s active tasks
+                    {cleanupDueBefore ? ` due by ${cleanupDueBefore}` : ''} as done
+                  </button>
+                )}
+                {bulkComplete.isSuccess && !cleanupConfirm && (
+                  <p className="text-xs text-muted">
+                    {bulkComplete.data.updated} task{bulkComplete.data.updated !== 1 ? 's' : ''} marked done.
+                  </p>
+                )}
+                {bulkComplete.error && (
+                  <p className="text-xs text-red-500">{bulkComplete.error.message}</p>
+                )}
+              </div>
+            )}
 
             {/* Task list */}
             <div className="p-4 space-y-2">

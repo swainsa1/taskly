@@ -75,6 +75,8 @@ export const adminApi = {
     }),
   bulkCreateTask: (owner_id, description, tag, dates) =>
     request('POST', '/api/v1/admin/tasks/bulk', { owner_id, description, tag, dates }),
+  bulkCompleteTasks: (owner_id, due_before) =>
+    request('PATCH', '/api/v1/admin/tasks/bulk-complete', { owner_id, due_before: due_before || null }),
   completeTask: (id) => request('PATCH', `/api/v1/admin/tasks/${id}/complete`),
   reopenTask:   (id) => request('PATCH', `/api/v1/admin/tasks/${id}/reopen`),
   deleteTask:   (id) => request('DELETE', `/api/v1/admin/tasks/${id}`),
