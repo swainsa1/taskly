@@ -1,0 +1,21 @@
+name: Keep Render service awake
+
+on:
+  schedule:
+    # Every 14 minutes. GitHub cron is best-effort and can slip a few
+    # minutes under load, so this isn't a 100% guarantee against Render's
+    # 15-minute spin-down, but it covers the vast majority of the time.
+    - cron: '*/14 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 https://taskly-3tic.onrender.com/api/health)
+          echo "Health check returned HTTP $status"
+          if [ "$status" != "200" ]; then
+            echo "Non-200 response (likely a cold start) — not failing the job."
+          fi
