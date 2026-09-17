@@ -168,6 +168,29 @@ async def bulk_create_tasks(body: AdminBulkCreateTaskBody, _admin: dict = Depend
     return tasks
 
 
+class AdminBulkCompleteBody(BaseModel):
+    owner_id: int
+    due_before: Optional[str] = None  # YYYY-MM-DD; if omitted, all open tasks match
+
+    @field_validator("due_before")
+    @classmethod
+    def validate_due_before(cls, v: Optional[str]) -> Optional[str]:
+        if v is None or not v.strip():
+            return None
+        if not DATE_RE.match(v.strip()):
+            raise ValueError("due_before must be YYYY-MM-DD")
+        return v.strip()
+
+
+@router.patch("/tasks/bulk-complete")
+async def bulk_complete_tasks(body: AdminBulkCompleteBody, _admin: dict = Depends(require_admin)):
+    owner = await user_service.find_by_id(body.owner_id)
+    if not owner:
+        raise HTTPException(status_code=404, detail="user not found")
+    updated = await task_service.bulk_complete_tasks(body.owner_id, body.due_before)
+    return {"updated": updated}
+
+
 @router.patch("/tasks/{task_id}/complete")
 async def complete_task(task_id: int, admin: dict = Depends(require_admin)):
     try:

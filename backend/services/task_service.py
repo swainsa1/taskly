@@ -135,6 +135,21 @@ async def delete_task(task_id: int) -> bool:
     return rs.rows_affected > 0
 
 
+async def bulk_complete_tasks(owner_id: int, due_before: str | None = None) -> int:
+    """Mark all open tasks for a user as closed, optionally limited to due_date <= due_before."""
+    if due_before:
+        rs = await execute(
+            "UPDATE tasks SET status = 'closed' WHERE owner_id = ? AND status = 'open' AND due_date IS NOT NULL AND due_date <= ?",
+            [owner_id, due_before],
+        )
+    else:
+        rs = await execute(
+            "UPDATE tasks SET status = 'closed' WHERE owner_id = ? AND status = 'open'",
+            [owner_id],
+        )
+    return rs.rows_affected
+
+
 _ADMIN_COLS = """
     t.id, t.owner_id, t.description, t.due_date, t.tag, t.status, t.created_at,
     u.display_name AS owner_display_name, u.username AS owner_username
